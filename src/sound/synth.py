@@ -66,7 +66,7 @@ class Synth:
         samples_per_callback = 60 * SAMPLE_RATE // bpm // 4
         self._call_tick_every = 1
         self._callback_count = 0
-        while samples_per_callback > 1024:
+        while samples_per_callback > 2048:
             samples_per_callback //= 2
             self._call_tick_every *= 2
         if self._stream is not None:
