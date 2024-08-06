@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "keyboarder"
+version = "0.1.0"
+description = ""
+authors = ["Laurin <116090154+Laurin-das-A@users.noreply.github.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pygame = "^2.6.0"
+numpy = "^2.0.1"
+matplotlib = "^3.9.1"
+customtkinter = "^5.2.2"
+pyaudio = "^0.2.14"
+numba = "^0.60.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
