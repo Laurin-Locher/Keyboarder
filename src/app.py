@@ -231,7 +231,7 @@ class App(ctk.CTk, KeyboardVisualizer):
         self.create_graph()
 
     def create_graph(self):
-        self.graph = ctk.CTkCanvas(self.information_display)
+        self.graph = ctk.CTkCanvas(self.information_display, bg='#444', highlightthickness=0)
         self.graph.place(relx=0.5, rely=0.22, relheight=0.6, relwidth=0.98, anchor='n')
         self.graph.update()
         self.draw_graph()
@@ -247,7 +247,7 @@ class App(ctk.CTk, KeyboardVisualizer):
             x1 = int(i * factor_x)
             y1 = int(.5 * height + .45 * height * buffer[i])
             if x0 is not None:
-                self.graph.create_line(x0, y0, x1, y1)
+                self.graph.create_line(x0, y0, x1, y1, fill='white')
             x0 = x1
             y0 = y1
         self.after(10, self.draw_graph)
