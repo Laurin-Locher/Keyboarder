@@ -1,7 +1,6 @@
 import numpy as np
 import numba
 
-
 NOTES = {
     'A': 27.500,
     'A#': 29.135,
@@ -16,6 +15,7 @@ NOTES = {
     'G': 48.999,
     'G#': 51.913,
 }
+TOTAL_NUMBER_OF_MIDI_KEYS = 108 - 21
 
 
 def transpose(note, octave, delta) -> tuple[str, int]:
@@ -30,6 +30,19 @@ def transpose(note, octave, delta) -> tuple[str, int]:
         octave += 1
 
     return names[note_index], octave
+
+
+def midi_index_to_note(index) -> (str, int):
+    names = list(NOTES.keys())
+
+    index -= 21
+    octave = 0
+
+    while index > len(NOTES) - 1:
+        octave += 1
+        index -= 12
+
+    return names[index], octave
 
 @numba.njit
 def adsr(volume_buf, t, sample_rate, length, volume, attack, decay, t_release, sustain, release):
@@ -85,7 +98,8 @@ class Sound:
             self._sum_buf = np.empty((length,), dtype=np.float32)
         adsr(
             self._volume_buf, self._t, sample_rate, length,
-            self.parameters.volume, self.parameters.attack, self.parameters.decay, self._t_release, self.parameters.sustain, self.parameters.release)
+            self.parameters.volume, self.parameters.attack, self.parameters.decay, self._t_release,
+            self.parameters.sustain, self.parameters.release)
         t_buf = np.arange(length) / sample_rate + self._t
         self._t += length / sample_rate
 

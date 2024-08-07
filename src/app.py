@@ -10,6 +10,8 @@ from src.parameters import Parameters
 from src.KeyboardVisualizer import KeyboardVisualizer
 from widgets.imagebutton import ImageButton
 from src.panels.drums import Drums
+from src.midi import MidiInput
+
 
 # KEY_BINDING = {
 #     'a': ('B', 0),
@@ -61,6 +63,8 @@ class App(ctk.CTk, KeyboardVisualizer):
 
         # parameters
         self.setup_parameters()
+
+        MidiInput(self)
 
         # Mainloop
         self.mainloop()
@@ -510,8 +514,9 @@ class App(ctk.CTk, KeyboardVisualizer):
             for key in black_keys:
                 key.lift()
 
-    def key_down(self, note):
-        self.keys[note].key_down(..., call_visualizer=False)
+    def key_down(self, note, update_gui=True):
+        if update_gui:
+            self.keys[note].key_down(..., call_visualizer=False)
 
         overtones_doubles = []
         for tone in self.overtones:
@@ -524,6 +529,9 @@ class App(ctk.CTk, KeyboardVisualizer):
                                self.arpeggiator.get_sound_list()
                                )
 
-    def key_up(self, note):
-        self.keys[note].key_up(..., call_visualizer=False)
+    def key_up(self, note, update_gui=True):
+        if update_gui:
+            self.keys[note].key_up(..., call_visualizer=False)
         self.synth.stop_sound(note[0], note[1])
+
+

@@ -7,7 +7,7 @@ class Arpeggiator(ctk.CTkFrame):
         super().__init__(master, fg_color=self.background)
 
         self.total_number_of_tones = 16
-        self.number_of_tones = ctk.IntVar(value=self.total_number_of_tones)
+        self.number_of_tones = ctk.IntVar(value=0)
         self.tones = []
         self.tone_sliders = []
 
@@ -34,6 +34,7 @@ class Arpeggiator(ctk.CTkFrame):
         number_of_tones_slider.pack(fill='x', padx=7)
 
         self.number_of_tones.trace_add('write', self.update_sliders)
+        self.update_sliders()
 
     def to_dict(self):
         notes = []

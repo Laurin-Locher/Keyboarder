@@ -12,6 +12,7 @@ customtkinter = "*"
 pyaudio = "*"
 numba = "*"
 pillow = "*"
+python-rtmidi = "^1.5.8"
 
 
 [build-system]
