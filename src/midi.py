@@ -25,14 +25,33 @@ class MidiInput:
         self.app = app
 
         self.midi_in = midi.MidiIn()
-        ports = self.midi_in.get_ports()
-        ports_dict = {k: v for (v, k) in enumerate(ports)}
 
-        self.midi_in.open_port(ports_dict['ARIUS'])
-        print(self.midi_in.is_port_open())
+        self.last_ports = None
+        self.current_port = None
+        thread = Thread(target=self.check_for_new_input)
+        thread.start()
 
         thread = Thread(target=self.main_loop)
         thread.start()
+
+    def check_for_new_input(self):
+        ports = self.midi_in.get_ports()
+
+        if not ports == self.last_ports:
+            print('inputs changed')
+            ports_dict = {k: v for (v, k) in enumerate(ports)}
+
+            try:
+                self.current_port = 'ARIUS'
+                self.midi_in.open_port(ports_dict[self.current_port])
+
+            except KeyError:
+                self.midi_in.close_port()
+                self.current_port = None
+
+        self.last_ports = ports.copy()
+        time.sleep(1)
+        self.check_for_new_input()
 
     def main_loop(self):
         while True:
@@ -49,9 +68,10 @@ class MidiInput:
             note_index = message[1]
 
             if event_index == 144:
-                print(f'press {midi_index_to_note(note_index)}')
-                self.app.key_down(midi_index_to_note(note_index), update_gui=False)
+                note, octave = midi_index_to_note(note_index)
+                print(f'octave. {octave}')
+                self.app.key_down(midi_index_to_note(note_index), is_midi_input=True)
 
             elif event_index == 128:
-                self.app.key_up(midi_index_to_note(note_index), update_gui=False)
+                self.app.key_up(midi_index_to_note(note_index), is_midi_input=True)
 

@@ -514,8 +514,8 @@ class App(ctk.CTk, KeyboardVisualizer):
             for key in black_keys:
                 key.lift()
 
-    def key_down(self, note, update_gui=True):
-        if update_gui:
+    def key_down(self, note, is_midi_input=False):
+        if not is_midi_input:
             self.keys[note].key_down(..., call_visualizer=False)
 
         overtones_doubles = []
@@ -524,14 +524,16 @@ class App(ctk.CTk, KeyboardVisualizer):
 
         self.current_parameters.overtones = overtones_doubles
 
+        print(f'octave_app: {note[1]}')
         self.synth.start_sound(note[0], note[1],
                                self.current_parameters,
-                               self.arpeggiator.get_sound_list()
+                               self.arpeggiator.get_sound_list(),
+                               offset_octave=not is_midi_input
                                )
 
-    def key_up(self, note, update_gui=True):
-        if update_gui:
+    def key_up(self, note, is_midi_input=False):
+        if not is_midi_input:
             self.keys[note].key_up(..., call_visualizer=False)
-        self.synth.stop_sound(note[0], note[1])
+        self.synth.stop_sound(note[0], note[1], offset_octave=not is_midi_input)
 
 

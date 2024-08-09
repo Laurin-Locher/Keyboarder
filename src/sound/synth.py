@@ -125,12 +125,20 @@ class Synth:
         except KeyError:
             pass
 
-    def start_sound(self, note, octave_increment, parameters, sound_list=None):
+    def start_sound(self, note, octave_increment, parameters, sound_list=None, offset_octave=True):
+        print(offset_octave)
         if sound_list:
-            self._arpeggios.add(Arpeggio(note, octave_increment, parameters, sound_list, self))
+            print('start arpeggiator')
+            self._arpeggios.add(Arpeggio(note, octave_increment, parameters, sound_list, self, offset_octave))
         else:
             with self._lock:
-                octave = self._octave + octave_increment
+                if offset_octave:
+                    octave = self._octave + octave_increment
+                else:
+                    octave = octave_increment
+
+                print(octave)
+
                 sound = Sound(note, octave, parameters)
                 self._sounds.add(sound)
                 return sound
@@ -147,8 +155,11 @@ class Synth:
         except KeyError:
             pass
 
-    def stop_sound(self, note, octave_increment):
-        octave = self._octave + octave_increment
+    def stop_sound(self, note, octave_increment, offset_octave=True):
+        if offset_octave:
+            octave = self._octave + octave_increment
+        else:
+            octave = octave_increment
 
         for sound in self._sounds:
             if sound.get_note_octave() == (note, octave):
