@@ -128,7 +128,6 @@ class Synth:
     def start_sound(self, note, octave_increment, parameters, sound_list=None, offset_octave=True):
         print(offset_octave)
         if sound_list:
-            print('start arpeggiator')
             self._arpeggios.add(Arpeggio(note, octave_increment, parameters, sound_list, self, offset_octave))
         else:
             with self._lock:
@@ -136,8 +135,6 @@ class Synth:
                     octave = self._octave + octave_increment
                 else:
                     octave = octave_increment
-
-                print(octave)
 
                 sound = Sound(note, octave, parameters)
                 self._sounds.add(sound)

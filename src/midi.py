@@ -2,6 +2,7 @@ import rtmidi as midi
 import time
 from threading import Thread
 from src.sound.sound import midi_index_to_note
+from src.selectinput import SelectInput
 
 
 # out = rtmidi.MidiOut()
@@ -26,7 +27,7 @@ class MidiInput:
 
         self.midi_in = midi.MidiIn()
 
-        self.last_ports = None
+        self.last_ports = []
         self.current_port = None
         thread = Thread(target=self.check_for_new_input)
         thread.start()
@@ -37,21 +38,33 @@ class MidiInput:
     def check_for_new_input(self):
         ports = self.midi_in.get_ports()
 
+        if not ports:
+            ports = []
+
         if not ports == self.last_ports:
             print('inputs changed')
-            ports_dict = {k: v for (v, k) in enumerate(ports)}
+            if len(ports) > len(self.last_ports):
+                self.ports_dict = {k: v for (v, k) in enumerate(ports)}
+                SelectInput(ports, self.open_port)
 
-            try:
-                self.current_port = 'ARIUS'
-                self.midi_in.open_port(ports_dict[self.current_port])
-
-            except KeyError:
-                self.midi_in.close_port()
-                self.current_port = None
+            else:
+                self.close_port()
 
         self.last_ports = ports.copy()
         time.sleep(1)
         self.check_for_new_input()
+
+    def open_port(self, port):
+        try:
+            self.current_port = port
+            self.midi_in.open_port(self.ports_dict[self.current_port])
+
+        except KeyError:
+            self.close_port()
+
+    def close_port(self):
+        self.midi_in.close_port()
+        self.current_port = None
 
     def main_loop(self):
         while True:
@@ -69,9 +82,7 @@ class MidiInput:
 
             if event_index == 144:
                 note, octave = midi_index_to_note(note_index)
-                print(f'octave. {octave}')
                 self.app.key_down(midi_index_to_note(note_index), is_midi_input=True)
 
             elif event_index == 128:
                 self.app.key_up(midi_index_to_note(note_index), is_midi_input=True)
-

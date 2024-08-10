@@ -11,6 +11,7 @@ from src.KeyboardVisualizer import KeyboardVisualizer
 from widgets.imagebutton import ImageButton
 from src.panels.drums import Drums
 from src.midi import MidiInput
+from src.selectinput import SelectInput
 
 
 # KEY_BINDING = {
@@ -64,6 +65,7 @@ class App(ctk.CTk, KeyboardVisualizer):
         # parameters
         self.setup_parameters()
 
+        # Midi Input
         MidiInput(self)
 
         # Mainloop
@@ -227,7 +229,7 @@ class App(ctk.CTk, KeyboardVisualizer):
         octave_changer.place(relx=0 + padding, rely=1 - padding, anchor='sw', relwidth=0.3, relheight=.1)
 
         ui_scale = ctk.DoubleVar(value=1)
-        ui_scale.trace_add('write', lambda *_: ctk.set_widget_scaling(ui_scale.get()))
+        ui_scale.trace_add('write', lambda _, __, ___: ctk.set_widget_scaling(ui_scale.get()))
 
         ui_scaler = ctk.CTkSlider(self.information_display, variable=ui_scale, from_=0, to=2)
         ui_scaler.place(relx=0.95, rely=.95, relwidth=.69, anchor='se')
@@ -524,7 +526,6 @@ class App(ctk.CTk, KeyboardVisualizer):
 
         self.current_parameters.overtones = overtones_doubles
 
-        print(f'octave_app: {note[1]}')
         self.synth.start_sound(note[0], note[1],
                                self.current_parameters,
                                self.arpeggiator.get_sound_list(),

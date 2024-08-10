@@ -11,7 +11,7 @@ class SoundFile:
         if filename not in self.CACHE:
             from src.sound.synth import SAMPLE_RATE
             wf = wave.open(filename, mode='rb')
-            print(f'loading {filename}')
+
             assert wf.getframerate() == SAMPLE_RATE
             data = wf.readframes(wf.getnframes())
             data = np.frombuffer(data, dtype=np.int16)
