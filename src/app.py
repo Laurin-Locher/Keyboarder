@@ -11,7 +11,7 @@ from src.KeyboardVisualizer import KeyboardVisualizer
 from widgets.imagebutton import ImageButton
 from src.panels.drums import Drums
 from src.midi import MidiInput
-from src.selectinput import SelectInput
+from src.widgets.round_slider import RoundSlider
 
 
 # KEY_BINDING = {
@@ -83,12 +83,13 @@ class App(ctk.CTk, KeyboardVisualizer):
         self.synth.run()
 
     def create_main_segments(self):
-        key_board_height = 0.4
+        self.rowconfigure((0, 1), uniform='a', weight=1)
+        self.columnconfigure(0, weight=1)
+
         self.keyboard_frame = ctk.CTkFrame(self, fg_color=self.background)
-        self.keyboard_frame.place(relx=0, rely=1 - key_board_height, relwidth=1, relheight=key_board_height)
-        padding = 0.05
+        self.keyboard_frame.grid(row=1, column=0, sticky='nswe', pady=10, padx=10)
         self.controls_frame = ctk.CTkFrame(self, fg_color=self.background)
-        self.controls_frame.place(relx=0, rely=padding, relwidth=1, relheight=1 - key_board_height - padding * 2)
+        self.controls_frame.grid(row=0, column=0, sticky='nswe', pady=10, padx=10)
 
     def create_menu(self):
         self.menu = Menu(self)
@@ -190,7 +191,7 @@ class App(ctk.CTk, KeyboardVisualizer):
     def setup_parameters(self):
         try:
             self.all_parameters = Parameters.load_all_parameters()
-        except:
+        except FileNotFoundError:
             self.all_parameters = []
 
         while len(self.all_parameters) < 10:
@@ -264,10 +265,18 @@ class App(ctk.CTk, KeyboardVisualizer):
         self.create_right_controls()
 
     def create_left_controls(self):
+        self.left_controls.rowconfigure((0, 1), uniform='a', weight=1)
+        self.left_controls.columnconfigure(0, weight=1)
+
         self.create_overtone_controls()
         self.create_adsr_controls()
 
     def create_right_controls(self):
+        self.right_controls.rowconfigure(0, weight=1, uniform='a')
+        self.right_controls.rowconfigure(1, weight=3, uniform='a')
+        self.right_controls.rowconfigure(2, weight=7, uniform='a')
+        self.right_controls.columnconfigure(0, weight=1)
+
         self.create_bpm_slider()
         self.create_drums_panel()
         self.create_arpeggiator()
@@ -285,8 +294,7 @@ class App(ctk.CTk, KeyboardVisualizer):
         bpm_label.pack(side='left')
         bpm_slider.pack(side='left', expand=True, fill='x')
 
-        padding = 0.05
-        bpm_frame.place(relx=padding, rely=0, relheight=0.1, relwidth=1 - 2 * padding)
+        bpm_frame.grid(row=0, column=0, sticky='nswe', pady=10)
 
     def _set_bpm(self, *args):
         self.bpm_label_var.set(f'{self.bpm.get()} bpm')
@@ -294,27 +302,28 @@ class App(ctk.CTk, KeyboardVisualizer):
 
     def create_drums_panel(self):
         self.drums = Drums(self.right_controls, self.background, self.synth, self.bpm)
-        self.drums.place(relx=0, rely=.1, relheight=0.25, relwidth=1)
+        self.drums.grid(row=1, column=0, sticky='nswe', pady=10)
         self.synth.add_tick_subscriber(self.drums)
 
     def create_arpeggiator(self):
         self.arpeggiator = Arpeggiator(self.right_controls, self.background)
-        self.arpeggiator.place(relx=0, rely=.35, relheight=.65, relwidth=1)
+        self.arpeggiator.grid(row=2, column=0, sticky='nswe', pady=10)
 
     def set_weight(self, index, value):
         self.current_parameters.overtones[index] = value.get()
 
     def create_overtone_controls(self):
         self.overtone_controls = ctk.CTkFrame(self.left_controls, fg_color=self.background)
-        self.overtone_controls.place(x=0, y=0, relheight=.45, relwidth=1)
+        self.overtone_controls.grid(row=0, column=0, sticky='nswe', pady=10)
+
         bar = ctk.CTkFrame(self.overtone_controls, fg_color=self.background)
         label = ctk.CTkLabel(bar, text='Overtones', font=('Arial', 15))
         label.pack(side='top', padx=10)
 
         def reset():
             value = 1
-            for weight in self.overtones:
-                weight.set(value=value)
+            for weight_ in self.overtones:
+                weight_.set(value=value)
                 value = 0
 
         reset = ctk.CTkButton(bar, text='Reset', fg_color=self.background,
@@ -337,10 +346,8 @@ class App(ctk.CTk, KeyboardVisualizer):
             default = 0
 
     def create_adsr_controls(self):
-        default = (0.01, 0.01, 0.8, 0.2, 1)
-
         self.adsr_controls = ctk.CTkFrame(self.left_controls, fg_color=self.background)
-        self.adsr_controls.place(relx=0, rely=.5, relheight=0.5, relwidth=1)
+        self.adsr_controls.grid(row=1, column=0, sticky='nswe', pady=10)
 
         self.attack = ctk.DoubleVar(value=self.current_parameters.attack)
         self.attack_str = ctk.StringVar(value='')
@@ -381,25 +388,30 @@ class App(ctk.CTk, KeyboardVisualizer):
         checkbox = ctk.CTkCheckBox(self.adsr_controls, text='Hold', variable=self.hold)
         self.hold.trace_add('write', self.set_hold)
 
-        attack_slider.pack(expand=True, fill='y', side='left')
-        decay_slider.pack(expand=True, fill='y', side='left')
-        sustain_slider.pack(expand=True, fill='y', side='left')
-        release_slider.pack(expand=True, fill='y', side='left')
-        volume_slider.pack(expand=True, fill='y', side='left')
-        checkbox.pack(expand=True, fill='y', side='left')
+        self.adsr_controls.rowconfigure((0, 1), weight=1, uniform='a')
+        self.adsr_controls.columnconfigure((0, 1, 2), weight=1, uniform='a')
+
+        attack_slider.grid(row=0, column=0, sticky='nswe')
+        decay_slider.grid(row=0, column=1, sticky='nswe')
+        sustain_slider.grid(row=0, column=2, sticky='nswe')
+        release_slider.grid(row=1, column=0, sticky='nswe')
+        volume_slider.grid(row=1, column=1, sticky='nswe')
+        checkbox.grid(row=1, column=2, sticky='nswe')
 
     def set_hold(self, *args):
         self.current_parameters.hold = self.hold.get()
 
     def slider(self, master, title: str, var, str_var, from_, to):
         frame = ctk.CTkFrame(master, fg_color=self.background, width=50)
-        slider = ctk.CTkSlider(frame, orientation='vertical', variable=var, from_=from_, to=to)
+        slider = RoundSlider(frame, variable=var, from_=from_, to=to, canvas_bg_color=self.background)
         title_label = ctk.CTkLabel(frame, text=title)
         amount = ctk.CTkLabel(frame, textvariable=str_var)
 
-        slider.place(relx=.5, y=0, relheight=0.65, anchor='n')
-        title_label.place(relx=0.5, rely=.65, anchor='n')
-        amount.place(relx=0.5, rely=.75, anchor='n')
+        frame.rowconfigure(0, weight=3, uniform='a')
+        frame.rowconfigure((1, 2), weight=1, uniform='a')
+        slider.grid(row=0, column=0, sticky='nswe')
+        title_label.grid(row=1, column=0, sticky='nswe')
+        amount.grid(row=2, column=0, sticky='nswe')
 
         return frame
 
@@ -432,19 +444,18 @@ class App(ctk.CTk, KeyboardVisualizer):
         self.volume_str.set(f'{value:.2f}')
 
     def create_control_areas(self):
+        self.controls_frame.rowconfigure(0, weight=1)
+        self.controls_frame.columnconfigure((0, 2), weight=1, uniform='a')
+        self.controls_frame.columnconfigure(1, weight=2, uniform='a')
         self.information_display = ctk.CTkFrame(self.controls_frame, fg_color=self.highlight_color)
         self.left_controls = ctk.CTkFrame(self.controls_frame, fg_color=self.background)
         self.right_controls = ctk.CTkFrame(self.controls_frame, fg_color=self.background)
-        info_width = 0.5
-        self.information_display.place(relx=0.5, rely=0, relwidth=info_width, relheight=1,
-                                       anchor='n')
 
-        padding = 0.005
-        self.left_controls.place(relx=padding, rely=0, relwidth=0.5 - info_width / 2 - 2 * padding, relheight=1)
+        self.information_display.grid(row=0, column=1, sticky='nswe')
 
-        pad = .005
-        self.right_controls.place(relx=0.5 + info_width / 2 + pad, rely=0, relwidth=0.5 - info_width / 2 - 2 * pad,
-                                  relheight=1)
+        self.left_controls.grid(row=0, column=0, sticky='nswe', padx=10)
+
+        self.right_controls.grid(row=0, column=2, sticky='nswe', padx=10)
 
     def create_octave_changer(self):
         octave_frame = ctk.CTkFrame(self.information_display, fg_color=self.highlight_color)
@@ -536,5 +547,3 @@ class App(ctk.CTk, KeyboardVisualizer):
         if not is_midi_input:
             self.keys[note].key_up(..., call_visualizer=False)
         self.synth.stop_sound(note[0], note[1], offset_octave=not is_midi_input)
-
-

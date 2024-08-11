@@ -20,7 +20,7 @@ class RoundSlider(ctk.CTkCanvas):
         self._fg_color = fg_color
         self._highlight_color = highlight_color
 
-        super().__init__(master, bg=canvas_bg_color)
+        super().__init__(master, bg=canvas_bg_color, relief='flat', borderwidth=0, highlightthickness=0)
 
         self._value = 0
         self._can_update_value_from_variable = True
@@ -77,12 +77,12 @@ class RoundSlider(ctk.CTkCanvas):
         self._variable.set(self._from_ + (self._to - self._from_) * self._value)
         self._can_update_value_from_variable = True
 
-        print(f'value: {self._variable.get()}')
-        self.redraw(...)
+        self.redraw_line()
 
     def _update_value_from_variable(self, *args):
         if self._can_update_value_from_variable:
             self._value = self._variable.get()
+            self.redraw_line()
 
     def redraw(self, _):
         self.delete('all')
@@ -90,25 +90,30 @@ class RoundSlider(ctk.CTkCanvas):
         width = self.winfo_width()
 
         if height < width:
-            first_pos = (width / 2 - height / 2, 0)
-            second_pos = (first_pos[0] + height, first_pos[1] + height)
+            self.first_pos = (width / 2 - height / 2, 0)
+            self.second_pos = (self.first_pos[0] + height, self.first_pos[1] + height)
 
         else:
-            first_pos = (0, height / 2 - width / 2)
-            second_pos = (first_pos[0] + width, first_pos[1] + width)
+            self.first_pos = (0, height / 2 - width / 2)
+            self.second_pos = (self.first_pos[0] + width, self.first_pos[1] + width)
 
-        self._create_highlight(first_pos, second_pos)
+        self._create_highlight(self.first_pos, self.second_pos)
 
-        pad_from_highlight = 10
-        self._create_background(first_pos, second_pos, pad_from_highlight)
+        self.pad_from_highlight = 5
+        self._create_background(self.first_pos, self.second_pos, self.pad_from_highlight)
 
-        radius = (second_pos[0] - first_pos[0]) / 2
-        center = (first_pos[0] + radius, first_pos[1] + radius)
+        self.redraw_line()
 
-        x1, y1 = self._calculate_line_endpos(self._value, center[0], center[1], radius - pad_from_highlight - 10)
+    def redraw_line(self):
+        self.delete('line')
+
+        radius = (self.second_pos[0] - self.first_pos[0]) / 2
+        center = (self.first_pos[0] + radius, self.first_pos[1] + radius)
+
+        x1, y1 = self._calculate_line_endpos(self._value, center[0], center[1], radius - self.pad_from_highlight - 10)
         x2, y2 = center
 
-        self.create_line((x1, y1, x2, y2), fill=self._fg_color, width=5)
+        self.create_line((x1, y1, x2, y2), fill=self._fg_color, width=5, tags='line')
 
     def _create_background(self, first_pos, second_pos, pad_from_highlight):
         padding = self._pad_in + pad_from_highlight
@@ -141,10 +146,3 @@ class RoundSlider(ctk.CTkCanvas):
         y = y_center + radius * math.sin(angle)
 
         return x, y
-
-
-# window = ctk.CTk()
-#
-# RoundSlider(window, from_=100, to=200).pack(expand=True, fill='both')
-#
-# window.mainloop()
