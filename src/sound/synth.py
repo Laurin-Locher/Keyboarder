@@ -126,7 +126,6 @@ class Synth:
             pass
 
     def start_sound(self, note, octave_increment, parameters, sound_list=None, offset_octave=True):
-        print(offset_octave)
         if sound_list:
             self._arpeggios.add(Arpeggio(note, octave_increment, parameters, sound_list, self, offset_octave))
         else:

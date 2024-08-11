@@ -81,7 +81,6 @@ class MidiInput:
             note_index = message[1]
 
             if event_index == 144:
-                note, octave = midi_index_to_note(note_index)
                 self.app.key_down(midi_index_to_note(note_index), is_midi_input=True)
 
             elif event_index == 128:
