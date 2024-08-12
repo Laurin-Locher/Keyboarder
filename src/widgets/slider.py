@@ -18,7 +18,7 @@ class Slider(ctk.CTkCanvas):
 
         self.variable.trace_add('write', self._update_value_from_variable)
 
-        super().__init__(master, bg=canvas_bg)
+        super().__init__(master, bg=canvas_bg, relief='flat', borderwidth=0, highlightthickness=0)
 
         self.value = self.variable.get()
 

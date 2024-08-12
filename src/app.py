@@ -12,6 +12,7 @@ from widgets.imagebutton import ImageButton
 from src.panels.drums import Drums
 from src.midi import MidiInput
 from src.widgets.round_slider import RoundSlider
+from src.widgets.slider import Slider
 
 
 # KEY_BINDING = {
@@ -316,6 +317,13 @@ class App(ctk.CTk, KeyboardVisualizer):
         self.overtone_controls = ctk.CTkFrame(self.left_controls, fg_color=self.background)
         self.overtone_controls.grid(row=0, column=0, sticky='nswe', pady=10)
 
+        self.overtone_controls.rowconfigure(0, weight=1)
+
+        number_of_controls = 15
+
+        self.overtone_controls.columnconfigure(list(range(number_of_controls)), weight=1, uniform='a')
+        self.overtone_controls.rowconfigure(1, weight=1)
+
         bar = ctk.CTkFrame(self.overtone_controls, fg_color=self.background)
         label = ctk.CTkLabel(bar, text='Overtones', font=('Arial', 15))
         label.pack(side='top', padx=10)
@@ -330,14 +338,15 @@ class App(ctk.CTk, KeyboardVisualizer):
                               hover_color=self.background,
                               command=reset)
         reset.pack(side='right', padx=10)
-        bar.pack()
-        number_of_controls = 15
+        bar.grid(row=0, column=0, columnspan=number_of_controls)
+
         self.overtones = []
         default = 1
+
         for index in range(number_of_controls):
             weight = ctk.DoubleVar(value=default)
-            slider = ctk.CTkSlider(self.overtone_controls, orientation='vertical', variable=weight)
-            slider.pack(side='left', expand=True, fill='y')
+            slider = Slider(self.overtone_controls, orientation='vertical', variable=weight, slider_width=4, fg_color=ACCENT_COLOR)
+            slider.grid(column=index, row=1, sticky='nswe')
 
             self.overtones.append(weight)
 
@@ -403,7 +412,7 @@ class App(ctk.CTk, KeyboardVisualizer):
 
     def slider(self, master, title: str, var, str_var, from_, to):
         frame = ctk.CTkFrame(master, fg_color=self.background, width=50)
-        slider = RoundSlider(frame, variable=var, from_=from_, to=to, canvas_bg_color=self.background)
+        slider = RoundSlider(frame, variable=var, from_=from_, to=to, canvas_bg_color=self.background, fg_color='#fff', highlight_color=ACCENT_COLOR)
         title_label = ctk.CTkLabel(frame, text=title)
         amount = ctk.CTkLabel(frame, textvariable=str_var)
 
