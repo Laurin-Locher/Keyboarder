@@ -38,6 +38,7 @@ from src.widgets.slider import Slider
 # }
 
 ACCENT_COLOR = '#206aa5'
+DARK_COLOR = '#1a5686'
 DISABLED_COLOR = '#383838'
 
 
@@ -290,10 +291,12 @@ class App(ctk.CTk, KeyboardVisualizer):
 
         bpm_frame = ctk.CTkFrame(self.right_controls, fg_color=self.background)
         bpm_label = ctk.CTkLabel(bpm_frame, textvariable=self.bpm_label_var)
-        bpm_slider = ctk.CTkSlider(bpm_frame, variable=self.bpm, orientation='horizontal', from_=40, to=240)
+        bpm_slider = Slider(bpm_frame, variable=self.bpm, orientation='horizontal', from_=40, to=240, fg_color=DARK_COLOR,
+                            handle_color=ACCENT_COLOR, bg_color=DISABLED_COLOR,
+                            has_handle=True, slider_width=4, handle_width=15, handle_height=5)
 
         bpm_label.pack(side='left')
-        bpm_slider.pack(side='left', expand=True, fill='x')
+        bpm_slider.pack(side='left', expand=True, fill='x', padx=10)
 
         bpm_frame.grid(row=0, column=0, sticky='nswe', pady=10)
 
@@ -322,7 +325,7 @@ class App(ctk.CTk, KeyboardVisualizer):
         number_of_controls = 15
 
         self.overtone_controls.columnconfigure(list(range(number_of_controls)), weight=1, uniform='a')
-        self.overtone_controls.rowconfigure(1, weight=1)
+        self.overtone_controls.rowconfigure(1, weight=10)
 
         bar = ctk.CTkFrame(self.overtone_controls, fg_color=self.background)
         label = ctk.CTkLabel(bar, text='Overtones', font=('Arial', 15))
@@ -338,7 +341,7 @@ class App(ctk.CTk, KeyboardVisualizer):
                               hover_color=self.background,
                               command=reset)
         reset.pack(side='right', padx=10)
-        bar.grid(row=0, column=0, columnspan=number_of_controls)
+        bar.grid(row=0, column=0, columnspan=number_of_controls, pady=5)
 
         self.overtones = []
         default = 1

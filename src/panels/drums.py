@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
 from tkinter import messagebox
+from src.widgets.slider import Slider
 
 
 class Drums(ctk.CTkFrame):
@@ -58,24 +59,24 @@ class Drums(ctk.CTkFrame):
         self.current_beat_index = (self.current_beat_index + 1) % self.beat
 
     def create_gui(self):
+        self.columnconfigure(0, weight=12)
+        self.columnconfigure(1, weight=1)
+
+        self.rowconfigure((0, 1, 2), weight=1, uniform='a')
+
         self.base_drum_frame = ctk.CTkFrame(self, border_width=1, fg_color=self.background)
         self.hi_hat_frame = ctk.CTkFrame(self, border_width=1, fg_color=self.background)
         self.snare_frame = ctk.CTkFrame(self, border_width=1, fg_color=self.background)
 
-        volume_slider_width = 0.1
         self.volume = ctk.DoubleVar(value=3)
-        self.volume_slider = ctk.CTkSlider(self, orientation='vertical', from_=0, to=5, variable=self.volume)
-        self.volume_slider.place(relx=1 - volume_slider_width / 2, rely=0, relheight=1, anchor='ne')
 
-        pad_x = 0.005
-        pad_y = 0.7
+        from src.app import ACCENT_COLOR, DISABLED_COLOR, DARK_COLOR
+        self.volume_slider = Slider(self, orientation='vertical', from_=0, to=5, variable=self.volume, fg_color=DARK_COLOR, bg_color=DISABLED_COLOR, has_handle=True, handle_color=ACCENT_COLOR, slider_width=4, handle_width=15, handle_height=5)
+        self.volume_slider.grid(row=0, column=1, rowspan=3, sticky='nswe')
 
-        self.base_drum_frame.place(relx=pad_x, rely=0, relwidth=1 - pad_x * 2 - volume_slider_width,
-                                   relheight=1 - pad_y)
-        self.hi_hat_frame.place(relx=pad_x, rely=1 / 3, relwidth=1 - pad_x * 2 - volume_slider_width,
-                                relheight=1 - pad_y)
-        self.snare_frame.place(relx=pad_x, rely=2 / 3, relwidth=1 - pad_x * 2 - volume_slider_width,
-                               relheight=1 - pad_y)
+        self.base_drum_frame.grid(row=0, column=0, sticky='nswe')
+        self.hi_hat_frame.grid(row=1, column=0, sticky='nswe')
+        self.snare_frame.grid(row=2, column=0, sticky='nswe')
 
         self.icons_path = 'resource/symbols/Drum_icons'
 
