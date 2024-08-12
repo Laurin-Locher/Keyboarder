@@ -396,7 +396,7 @@ class App(ctk.CTk, KeyboardVisualizer):
         sustain_slider.grid(row=0, column=2, sticky='nswe')
         release_slider.grid(row=1, column=0, sticky='nswe')
         volume_slider.grid(row=1, column=1, sticky='nswe')
-        checkbox.grid(row=1, column=2, sticky='nswe')
+        checkbox.grid(row=1, column=2, sticky='ns')
 
     def set_hold(self, *args):
         self.current_parameters.hold = self.hold.get()

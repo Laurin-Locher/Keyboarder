@@ -146,3 +146,15 @@ class RoundSlider(ctk.CTkCanvas):
         y = y_center + radius * math.sin(angle)
 
         return x, y
+
+
+# window = ctk.CTk()
+# window.rowconfigure((0, 1), weight=1, uniform='a')
+# window.columnconfigure((0, 1), weight=1, uniform='a')
+#
+# RoundSlider(window).grid(row=0, column=0, sticky='nswe')
+# RoundSlider(window).grid(row=1, column=1, sticky='nswe')
+# RoundSlider(window).grid(row=0, column=1, sticky='nswe')
+# RoundSlider(window).grid(row=1, column=0, sticky='nswe')
+#
+# window.mainloop()
