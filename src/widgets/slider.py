@@ -27,7 +27,7 @@ class Slider(ctk.CTkCanvas):
         if variable:
             self._variable = variable
         else:
-            self._variable = ctk.DoubleVar(value=.6)
+            self._variable = ctk.DoubleVar(value=self._from_ + (self._to - self._from_) / 2)
 
         self._variable.trace_add('write', self._update_value_from_variable)
 
@@ -79,7 +79,7 @@ class Slider(ctk.CTkCanvas):
 
         elif self._orientation == 1:
             self.x2 = self.x1
-            self.x1 = width - width * self.value
+            self.x1 = width * self.value
 
         if self._disabled:
             color = self._bg_color
@@ -132,7 +132,7 @@ class Slider(ctk.CTkCanvas):
             self.new_value = 1 - event.y / self.winfo_height()
 
         elif self._orientation == 1:
-            self.new_value = 1 - event.x / self.winfo_width()
+            self.new_value = event.x / self.winfo_width()
 
         if self._number_of_steps:
             self.new_value = self.new_value - self.new_value % (1 / self._number_of_steps)
@@ -148,7 +148,7 @@ class Slider(ctk.CTkCanvas):
         if self._orientation == 0:
             self._variable.set(self._from_ + (self._to - self._from_) * self.value)
         elif self._orientation == 1:
-            self._variable.set(self._from_ + (self._to - self._from_) * (1 - self.value))
+            self._variable.set(self._from_ + (self._to - self._from_) * self.value)
 
         self.can_update_from_variable = True
 

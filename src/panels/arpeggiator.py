@@ -30,10 +30,14 @@ class Arpeggiator(ctk.CTkFrame):
 
             self.slider(tone, duration, index, 1)
 
-        number_of_tones_slider = ctk.CTkSlider(self, orientation='horizontal', variable=self.number_of_tones, from_=0,
-                                               to=self.total_number_of_tones,
-                                               number_of_steps=self.total_number_of_tones + 1)
-        number_of_tones_slider.grid(row=4, column=0, sticky='nwe', columnspan=self.total_number_of_tones)
+        from src.app import ACCENT_COLOR, DARK_COLOR, DISABLED_COLOR
+        number_of_tones_slider = Slider(self, orientation='horizontal', variable=self.number_of_tones, from_=0,
+                                        to=self.total_number_of_tones,
+                                        number_of_steps=self.total_number_of_tones + 1, fg_color=DARK_COLOR,
+                                        bg_color=DISABLED_COLOR, handle_color=ACCENT_COLOR, canvas_bg=self.background,
+                                        has_handle=True, slider_width=4, handle_width=15, handle_height=5)
+
+        number_of_tones_slider.grid(row=3, column=0, sticky='nwe', columnspan=self.total_number_of_tones)
 
         self.number_of_tones.trace_add('write', self.update_sliders)
         self.update_sliders()
