@@ -118,7 +118,7 @@ class RoundSlider(ctk.CTkCanvas):
         x1, y1 = self._calculate_line_endpos(self._value, center[0], center[1], radius - self.pad_from_highlight - 10)
         x2, y2 = center
 
-        self.create_line((x1, y1, x2, y2), fill=self._fg_color, width=5, tags='line')
+        self.create_line((x1, y1, x2, y2), fill=self._fg_color, width=3, tags='line')
 
     def _create_background(self, first_pos, second_pos, pad_from_highlight):
         padding = self._pad_in + pad_from_highlight
@@ -127,7 +127,7 @@ class RoundSlider(ctk.CTkCanvas):
         self.create_oval(padded_pos, fill=self._bg_color, outline=self._bg_color)
 
     def _create_highlight(self, first_pos, second_pos):
-        padding = self._pad_in
+        padding = self._pad_in + 1
         padded_pos = ((first_pos[0] + padding, first_pos[1] + padding),
                       (second_pos[0] - padding, second_pos[1] - padding))
 

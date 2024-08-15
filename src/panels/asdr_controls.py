@@ -3,8 +3,9 @@ from src.widgets.round_slider import RoundSlider
 
 
 class Adsr_controls(ctk.CTkFrame):
-    def __init__(self, master, current_parameters, background):
+    def __init__(self, master, current_parameters, background, app):
         self.current_parameters = current_parameters
+        self.app = app
         self.background = background
 
         super().__init__(master, fg_color=self.background)
@@ -57,7 +58,7 @@ class Adsr_controls(ctk.CTkFrame):
         # self.bind('<Configure>', lambda _: self.re_grid_everything())
 
     def set_hold(self, *args):
-        self.current_parameters.hold = self.hold.get()
+        self.app.current_parameters.hold = self.hold.get()
 
     def slider(self, master, title: str, var, str_var, from_, to, row, column):
         from src.app import ACCENT_COLOR
@@ -72,28 +73,28 @@ class Adsr_controls(ctk.CTkFrame):
 
     def _set_attack(self, *args):
         value = self.attack.get()
-        self.current_parameters.attack = value
+        self.app.current_parameters.attack = value
         self.attack_str.set(f'{value:.2f}')
 
     def _set_decay(self, *args):
         value = self.decay.get()
-        self.current_parameters.decay = value
+        self.app.current_parameters.decay = value
 
         self.decay_str.set(f'{value:.2f}')
 
     def _set_sustain(self, *args):
         value = self.sustain.get()
-        self.current_parameters.sustain = value
+        self.app.current_parameters.sustain = value
 
         self.sustain_str.set(f'{value:.2f}')
 
     def _set_release(self, *args):
         value = self.release.get()
-        self.current_parameters.release = value
+        self.app.current_parameters.release = value
         self.release_str.set(f'{value:.2f}')
 
     def _set_volume(self, *args):
         value = self.volume.get()
-        self.current_parameters.volume = value
+        self.app.current_parameters.volume = value
 
         self.volume_str.set(f'{value:.2f}')

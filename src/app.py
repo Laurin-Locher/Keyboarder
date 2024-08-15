@@ -12,7 +12,6 @@ from panels.keyboard import Keyboard
 from panels.overtone_controls import OvertoneControls
 from panels.asdr_controls import Adsr_controls
 from src.panels.information_panel import InformationPanel
-from src.widgets.round_slider import RoundSlider
 
 # KEY_BINDING = {
 #     'a': ('B', 0),
@@ -235,7 +234,7 @@ class App(ctk.CTk, KeyboardVisualizer):
         self.overtone_controls = OvertoneControls(self.left_controls, self.background, self.set_weight)
         self.overtone_controls.grid(row=0, column=0, sticky='nswe', pady=10)
 
-        self.adsr_controls = Adsr_controls(self.left_controls, self.current_parameters, self.background)
+        self.adsr_controls = Adsr_controls(self.left_controls, self.current_parameters, self.background, self)
         self.adsr_controls.grid(row=1, column=0, sticky='nswe', pady=10)
 
     def create_right_controls(self):
@@ -306,6 +305,8 @@ class App(ctk.CTk, KeyboardVisualizer):
             overtones_doubles.append(tone.get())
 
         self.current_parameters.overtones = overtones_doubles
+
+        print(self.current_parameters.volume)
 
         self.synth.start_sound(note[0], note[1],
                                self.current_parameters,
