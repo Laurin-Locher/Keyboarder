@@ -36,23 +36,23 @@ class MidiInput:
         thread.start()
 
     def check_for_new_input(self):
-        ports = self.midi_in.get_ports()
+        while True:
+            ports = self.midi_in.get_ports()
 
-        if not ports:
-            ports = []
+            if not ports:
+                ports = []
 
-        if not ports == self.last_ports:
-            print('inputs changed')
-            if len(ports) > len(self.last_ports):
-                self.ports_dict = {k: v for (v, k) in enumerate(ports)}
-                SelectInput(ports, self.open_port)
+            if not ports == self.last_ports:
+                print('inputs changed')
+                if len(ports) > len(self.last_ports):
+                    self.ports_dict = {k: v for (v, k) in enumerate(ports)}
+                    SelectInput(ports, self.open_port)
 
-            else:
-                self.close_port()
+                else:
+                    self.close_port()
 
-        self.last_ports = ports.copy()
-        time.sleep(1)
-        self.check_for_new_input()
+            self.last_ports = ports.copy()
+            time.sleep(1)
 
     def open_port(self, port):
         try:

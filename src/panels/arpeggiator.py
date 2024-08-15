@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from src.widgets.slider import Slider
 
 
 class Arpeggiator(ctk.CTkFrame):
@@ -11,27 +12,28 @@ class Arpeggiator(ctk.CTkFrame):
         self.tones = []
         self.tone_sliders = []
 
-        self.test_slider = ctk.CTkSlider(self)
+        self.rowconfigure(0, weight=1, uniform='a')
+        self.rowconfigure(1, weight=4, uniform='a')
+        self.rowconfigure(2, weight=2, uniform='a')
+        self.rowconfigure(3, weight=1, uniform='a')
+        # self.test_slider = ctk.CTkSlider(self)
 
         title = ctk.CTkLabel(self, text='Arpeggiator')
-        title.pack(pady=10)
+        title.grid(row=0, column=0, sticky='nswe')
 
-        tones_frame = ctk.CTkFrame(self, fg_color=self.background)
+        self.columnconfigure(list(range(self.total_number_of_tones)), weight=1, uniform='a')
+
         for index in range(self.total_number_of_tones):
             tone = ctk.IntVar()
             duration = ctk.IntVar()
             self.tones.append((tone, duration))
 
-            sliders = self.slider(tones_frame, f'{index + 1}', tone, duration)
-
-            sliders.pack(expand=True, fill='y', side='left')
-
-        tones_frame.pack(expand=True, fill='both')
+            self.slider(tone, duration, index, 1)
 
         number_of_tones_slider = ctk.CTkSlider(self, orientation='horizontal', variable=self.number_of_tones, from_=0,
                                                to=self.total_number_of_tones,
                                                number_of_steps=self.total_number_of_tones + 1)
-        number_of_tones_slider.pack(fill='x', padx=7)
+        number_of_tones_slider.grid(row=4, column=0, sticky='nwe', columnspan=self.total_number_of_tones)
 
         self.number_of_tones.trace_add('write', self.update_sliders)
         self.update_sliders()
@@ -57,35 +59,30 @@ class Arpeggiator(ctk.CTkFrame):
         self.number_of_tones.set(dict_['number_of_tones'])
 
     def update_sliders(self, *args):
-        from src.app import ACCENT_COLOR, DISABLED_COLOR
         for index, sliders in enumerate(self.tone_sliders):
             for slider in sliders:
                 if index >= self.number_of_tones.get():
-                    slider.configure(fg_color=DISABLED_COLOR,
-                                     button_color=DISABLED_COLOR,
-                                     progress_color=DISABLED_COLOR,
-                                     state='disabled')
+                    slider.disable()
 
                 else:
-                    slider.configure(fg_color=self.test_slider.cget('fg_color'),
-                                     button_color=ACCENT_COLOR,
-                                     progress_color=self.test_slider.cget('progress_color'),
-                                     state='normal')
+                    slider.enable()
 
-    def slider(self, master, title: str, tone, duration):
-        frame = ctk.CTkFrame(master, fg_color=self.background, width=20)
-        tone_slider = ctk.CTkSlider(frame, orientation='vertical', variable=tone, from_=-12, to=12, number_of_steps=24)
-        duration_slider = ctk.CTkSlider(frame, orientation='vertical', variable=duration, from_=1, to=4,
-                                        number_of_steps=3)
-        title_label = ctk.CTkLabel(frame, text=title)
+    def slider(self, tone, duration, column, row):
 
-        tone_slider.place(relx=0.5, rely=0, relheight=.7, anchor='n')
-        duration_slider.place(relx=0.5, rely=.7, relheight=.2, anchor='n')
-        title_label.place(relx=0.5, rely=1, relheight=.1, relwidth=1, anchor='s')
+        from src.app import ACCENT_COLOR, DISABLED_COLOR, DARK_COLOR
+        tone_slider = Slider(self, orientation='vertical', variable=tone, from_=-12, to=12, number_of_steps=24,
+                             has_handle=True, slider_width=4, handle_width=15, handle_height=5, fg_color=DARK_COLOR,
+                             handle_color=ACCENT_COLOR, bg_color=DISABLED_COLOR, start_in_middle=True)
+
+        duration_slider = Slider(self, orientation='vertical', variable=duration, from_=1, to=4,
+                                 number_of_steps=3, has_handle=True, slider_width=4, handle_width=15, handle_height=5,
+                                 fg_color=DARK_COLOR, handle_color=ACCENT_COLOR, bg_color=DISABLED_COLOR)
+        title_label = ctk.CTkLabel(self, text='title')
+
+        tone_slider.grid(row=row, column=column, sticky='nsw', pady=10)
+        duration_slider.grid(row=row + 1, column=column, sticky='nsw', pady=10)
 
         self.tone_sliders.append((tone_slider, duration_slider))
-
-        return frame
 
     def get_sound_list(self):
         sound_list = []

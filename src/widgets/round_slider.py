@@ -32,6 +32,8 @@ class RoundSlider(ctk.CTkCanvas):
 
         self._variable.trace_add('write', self._update_value_from_variable)
 
+        self.redraw(...)
+
         self.bind('<Configure>', self.redraw)
 
         self.button_pressed = False
