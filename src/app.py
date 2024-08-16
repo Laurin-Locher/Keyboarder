@@ -196,7 +196,8 @@ class App(ctk.CTk, KeyboardVisualizer):
         # self.minsize(width=1300, height=800)
 
     def create_main_segments(self):
-        self.rowconfigure((0, 1), uniform='a', weight=1)
+        self.rowconfigure(0, uniform='a', weight=1)
+        self.rowconfigure(1, uniform='a', weight=1)
         self.columnconfigure(0, weight=1)
 
         self.controls_frame = ctk.CTkFrame(self, fg_color=self.background)
@@ -305,8 +306,6 @@ class App(ctk.CTk, KeyboardVisualizer):
             overtones_doubles.append(tone.get())
 
         self.current_parameters.overtones = overtones_doubles
-
-        print(self.current_parameters.volume)
 
         self.synth.start_sound(note[0], note[1],
                                self.current_parameters,

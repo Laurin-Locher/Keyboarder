@@ -85,7 +85,7 @@ class RoundSlider(ctk.CTkCanvas):
         if self._can_update_value_from_variable:
             new_value: float = (self._variable.get() - self._from_) / (self._to - self._from_)
 
-            self.value = (min(1.0, max(0.0, new_value)))
+            self._set_value(new_value)
 
             self.redraw_line()
 

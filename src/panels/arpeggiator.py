@@ -19,9 +19,9 @@ class Arpeggiator(ctk.CTkFrame):
         # self.test_slider = ctk.CTkSlider(self)
 
         title = ctk.CTkLabel(self, text='Arpeggiator')
-        title.grid(row=0, column=0, sticky='nswe')
 
         self.columnconfigure(list(range(self.total_number_of_tones)), weight=1, uniform='a')
+        title.grid(row=0, column=0, sticky='nswe', columnspan=self.total_number_of_tones)
 
         for index in range(self.total_number_of_tones):
             tone = ctk.IntVar()
