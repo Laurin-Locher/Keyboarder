@@ -10,6 +10,10 @@ class Adsr_controls(ctk.CTkFrame):
 
         super().__init__(master, fg_color=self.background)
 
+        self.rowconfigure(0, weight=2, uniform='a')
+        self.rowconfigure(1, weight=1, uniform='a')
+        self.columnconfigure((0, 1, 2, 3, 4, 5), weight=1, uniform='a')
+
         self.attack = ctk.DoubleVar(value=self.current_parameters.attack)
         self.attack_str = ctk.StringVar(value='')
         self.attack.trace_add('write', self._set_attack)
@@ -36,24 +40,20 @@ class Adsr_controls(ctk.CTkFrame):
         self.release.trace_add('write', self._set_release)
         self._set_release()
 
-        self.slider(self, 'Release', self.release, self.release_str, 0, 1, 3, 0)
+        self.slider(self, 'Release', self.release, self.release_str, 0, 1, 0, 3)
 
         self.volume = ctk.DoubleVar(value=self.current_parameters.volume)
         self.volume_str = ctk.StringVar(value='')
         self.volume.trace_add('write', self._set_volume)
         self._set_volume()
 
-        self.slider(self, 'Volume', self.volume, self.volume_str, 0, 10, 3, 1)
+        self.slider(self, 'Volume', self.volume, self.volume_str, 0, 10, 0, 4)
 
         self.hold = ctk.BooleanVar(value=True)
         self.checkbox = ctk.CTkCheckBox(self, text='Hold', variable=self.hold, bg_color=self.background)
         self.hold.trace_add('write', self.set_hold)
 
-        self.rowconfigure((0, 3), weight=3, uniform='a')
-        self.rowconfigure((1, 2, 4, 5), weight=1, uniform='a')
-        self.columnconfigure((0, 1, 2), weight=1, uniform='a')
-
-        self.checkbox.grid(row=3, column=2, sticky='ns', rowspan=3)
+        self.checkbox.grid(row=0, column=5, sticky='ns', rowspan=3)
 
         # self.bind('<Configure>', lambda _: self.re_grid_everything())
 
@@ -63,13 +63,18 @@ class Adsr_controls(ctk.CTkFrame):
     def slider(self, master, title: str, var, str_var, from_, to, row, column):
         from src.app import ACCENT_COLOR
         slider = RoundSlider(self, variable=var, from_=from_, to=to, canvas_bg_color=self.background, fg_color='#fff',
-                             highlight_color=ACCENT_COLOR)
-        title_label = ctk.CTkLabel(self, text=title)
-        amount = ctk.CTkLabel(self, textvariable=str_var)
+                             highlight_color=ACCENT_COLOR, max_size=110)
 
-        slider.grid(row=row, column=column, sticky='nswe')
-        title_label.grid(row=row+1, column=column, sticky='nswe')
-        amount.grid(row=row+2, column=column, sticky='nswe')
+        text_frame = ctk.CTkFrame(self, fg_color=self.background)
+        title_label = ctk.CTkLabel(text_frame, text=title)
+        amount = ctk.CTkLabel(text_frame, textvariable=str_var)
+
+        slider.grid(row=row, column=column, sticky='nswe', pady=10, padx=10)
+
+        title_label.pack(fill='x')
+        amount.pack(fill='x')
+
+        text_frame.grid(row=row+1, column=column, sticky='n', pady=5)
 
     def _set_attack(self, *args):
         value = self.attack.get()

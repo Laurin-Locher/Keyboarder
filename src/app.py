@@ -196,8 +196,8 @@ class App(ctk.CTk, KeyboardVisualizer):
         # self.minsize(width=1300, height=800)
 
     def create_main_segments(self):
-        self.rowconfigure(0, uniform='a', weight=1)
-        self.rowconfigure(1, uniform='a', weight=1)
+        self.rowconfigure(0, uniform='a', weight=4)
+        self.rowconfigure(1, uniform='a', weight=2)
         self.columnconfigure(0, weight=1)
 
         self.controls_frame = ctk.CTkFrame(self, fg_color=self.background)
@@ -207,23 +207,29 @@ class App(ctk.CTk, KeyboardVisualizer):
         self.keyboard.grid(row=1, column=0, sticky='nswe', pady=10, padx=10)
 
     def create_control_areas(self):
-        self.controls_frame.rowconfigure(0, weight=1, uniform='a')
+        self.controls_frame.rowconfigure(0, weight=2, uniform='a')
+        self.controls_frame.rowconfigure(1, weight=1, uniform='a')
         self.controls_frame.columnconfigure((0, 2), weight=1, uniform='a')
         self.controls_frame.columnconfigure(1, weight=2, uniform='a')
 
         self.information_display = InformationPanel(self.controls_frame, self.synth, self.current_parameters,
-                                                    self.highlight_color, self.octave, self)
+                                                    self.highlight_color, self.octave, self, background=self.background)
 
         self.left_controls = ctk.CTkFrame(self.controls_frame, fg_color=self.background)
         self.right_controls = ctk.CTkFrame(self.controls_frame, fg_color=self.background)
 
         self.information_display.grid(row=0, column=1, sticky='nswe')
 
-        self.left_controls.grid(row=0, column=0, sticky='nswe', padx=10)
+        self.left_controls.grid(row=0, column=0, sticky='nswe', padx=10, rowspan=2)
 
         self.right_controls.grid(row=0, column=2, sticky='nswe', padx=10)
 
     def create_controls(self):
+        self.overtone_controls = OvertoneControls(self.controls_frame, self.background, self.set_weight)
+        self.overtone_controls.grid(row=1, column=2, sticky='nswe', pady=10)
+
+        self.adsr_controls = Adsr_controls(self.controls_frame, self.current_parameters, self.background, self)
+        self.adsr_controls.grid(row=1, column=1, sticky='nswe', pady=10)
 
         self.create_left_controls()
         self.create_right_controls()
@@ -231,12 +237,6 @@ class App(ctk.CTk, KeyboardVisualizer):
     def create_left_controls(self):
         self.left_controls.rowconfigure((0, 1), uniform='a', weight=1)
         self.left_controls.columnconfigure(0, weight=1, uniform='a')
-
-        self.overtone_controls = OvertoneControls(self.left_controls, self.background, self.set_weight)
-        self.overtone_controls.grid(row=0, column=0, sticky='nswe', pady=10)
-
-        self.adsr_controls = Adsr_controls(self.left_controls, self.current_parameters, self.background, self)
-        self.adsr_controls.grid(row=1, column=0, sticky='nswe', pady=10)
 
     def create_right_controls(self):
         self.right_controls.rowconfigure(0, weight=1, uniform='a')

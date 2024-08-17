@@ -4,12 +4,13 @@ from PIL import Image
 
 
 class InformationPanel(ctk.CTkFrame):
-    def __init__(self, master, synth, current_parameters, highlight_color, octave, window):
+    def __init__(self, master, synth, current_parameters, highlight_color, octave, window, background):
         self.synth = synth
         self.current_parameters = current_parameters
         self.highlight_color = highlight_color
         self.octave = octave
         self.window = window
+        self.background = background
         
         super().__init__(master)
 
@@ -21,11 +22,11 @@ class InformationPanel(ctk.CTkFrame):
         padding = 0.01
         octave_changer.place(relx=0 + padding, rely=1 - padding, anchor='sw', relwidth=0.3, relheight=.1)
 
-        ui_scale = ctk.DoubleVar(value=1)
-        ui_scale.trace_add('write', lambda _, __, ___: ctk.set_widget_scaling(ui_scale.get()))
-
-        ui_scaler = ctk.CTkSlider(self, variable=ui_scale, from_=0, to=2)
-        ui_scaler.place(relx=0.95, rely=.95, relwidth=.69, anchor='se')
+        # ui_scale = ctk.DoubleVar(value=1)
+        # ui_scale.trace_add('write', lambda _, __, ___: ctk.set_widget_scaling(ui_scale.get()))
+        #
+        # ui_scaler = ctk.CTkSlider(self, variable=ui_scale, from_=0, to=2)
+        # ui_scaler.place(relx=0.95, rely=.95, relwidth=.69, anchor='se')
 
         self.create_graph()
 
@@ -33,9 +34,10 @@ class InformationPanel(ctk.CTkFrame):
         self.graph = ctk.CTkCanvas(self, bg='#444', highlightthickness=0)
         self.graph.place(relx=0.5, rely=0.22, relheight=0.6, relwidth=0.98, anchor='n')
         self.graph.update()
+        self.bind('<Configure>', lambda _: self.draw_graph(loop=False))
         self.draw_graph()
 
-    def draw_graph(self):
+    def draw_graph(self, loop=True):
         self.graph.delete('all')
         buffer = self.synth.get_buffer()
         width = self.graph.winfo_width()
@@ -49,7 +51,9 @@ class InformationPanel(ctk.CTkFrame):
                 self.graph.create_line(x0, y0, x1, y1, fill='white')
             x0 = x1
             y0 = y1
-        self.after(10, self.draw_graph)
+
+        if loop:
+            self.after(10, self.draw_graph)
         
     def create_octave_changer(self):
         octave_frame = ctk.CTkFrame(self, fg_color=self.highlight_color)

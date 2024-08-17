@@ -10,7 +10,9 @@ class RoundSlider(ctk.CTkCanvas):
                  canvas_bg_color='#000',
                  bg_color='#333',
                  fg_color='#fff',
-                 highlight_color='#777'):
+                 highlight_color='#777',
+                 max_size=None
+                 ):
 
         self._from_ = from_
         self._to = to
@@ -19,6 +21,7 @@ class RoundSlider(ctk.CTkCanvas):
         self._bg_color = bg_color
         self._fg_color = fg_color
         self._highlight_color = highlight_color
+        self._max_size = max_size
 
         super().__init__(master, bg=canvas_bg_color, relief='flat', borderwidth=0, highlightthickness=0)
 
@@ -95,11 +98,18 @@ class RoundSlider(ctk.CTkCanvas):
         width = self.winfo_width()
 
         if height < width:
-            self.first_pos = (width / 2 - height / 2, 0)
+
+            if self._max_size:
+                height = min(height, self._max_size)
+
+            self.first_pos = (width / 2 - height / 2, self.winfo_height() / 2 - height / 2)
             self.second_pos = (self.first_pos[0] + height, self.first_pos[1] + height)
 
         else:
-            self.first_pos = (0, height / 2 - width / 2)
+            if self._max_size:
+                width = min(width, self._max_size)
+
+            self.first_pos = (self.winfo_width() / 2 - width / 2, height / 2 - width / 2)
             self.second_pos = (self.first_pos[0] + width, self.first_pos[1] + width)
 
         self._create_highlight(self.first_pos, self.second_pos)

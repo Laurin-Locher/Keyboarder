@@ -33,7 +33,7 @@ class Arpeggiator(ctk.CTkFrame):
         from src.app import ACCENT_COLOR, DARK_COLOR, DISABLED_COLOR
         number_of_tones_slider = Slider(self, orientation='horizontal', variable=self.number_of_tones, from_=0,
                                         to=self.total_number_of_tones,
-                                        number_of_steps=self.total_number_of_tones + 1, fg_color=DARK_COLOR,
+                                        number_of_steps=self.total_number_of_tones, fg_color=DARK_COLOR,
                                         bg_color=DISABLED_COLOR, handle_color=ACCENT_COLOR, canvas_bg=self.background,
                                         has_handle=True, slider_width=4, handle_width=15, handle_height=5)
 
@@ -75,13 +75,12 @@ class Arpeggiator(ctk.CTkFrame):
 
         from src.app import ACCENT_COLOR, DISABLED_COLOR, DARK_COLOR
         tone_slider = Slider(self, orientation='vertical', variable=tone, from_=-12, to=12, number_of_steps=24,
-                             has_handle=True, slider_width=4, handle_width=15, handle_height=5, fg_color=DARK_COLOR,
+                             has_handle=True, slider_width=4, handle_width=12, handle_height=5, fg_color=DARK_COLOR,
                              handle_color=ACCENT_COLOR, bg_color=DISABLED_COLOR, start_in_middle=True)
 
         duration_slider = Slider(self, orientation='vertical', variable=duration, from_=1, to=4,
-                                 number_of_steps=3, has_handle=True, slider_width=4, handle_width=15, handle_height=5,
+                                 number_of_steps=3, has_handle=True, slider_width=4, handle_width=12, handle_height=5,
                                  fg_color=DARK_COLOR, handle_color=ACCENT_COLOR, bg_color=DISABLED_COLOR)
-        title_label = ctk.CTkLabel(self, text='title')
 
         tone_slider.grid(row=row, column=column, sticky='nsw', pady=10)
         duration_slider.grid(row=row + 1, column=column, sticky='nsw', pady=10)

@@ -122,9 +122,9 @@ class Drums(ctk.CTkFrame):
             else:
                 current_color = disabled_color
 
-            beat_button = ctk.CTkFrame(pattern, fg_color=current_color, corner_radius=5, border_width=5,
+            beat_button = ctk.CTkFrame(pattern, fg_color=current_color, corner_radius=0, border_width=0,
                                        border_color=self.background)
-            beat_button.grid(row=0, column=beat_index, sticky='nswe')
+            beat_button.grid(row=0, column=beat_index, sticky='nswe', padx=2, pady=2)
 
             beat_button.bind('<Button>',
                              lambda _, b=beat_button, i=beat_index, ba=beat_array:
