@@ -49,10 +49,10 @@ class Selector(ctk.CTkFrame):
 
             self.synthesizer_frames.append(frame)
 
-            frame.bind('<Button>', lambda _, i=index: self.set_synth(i))
-            text.bind('<Button>', lambda _, i=index: self.set_synth(i))
+            frame.bind('<Button>', lambda _, i=index: self._set_synth(i))
+            text.bind('<Button>', lambda _, i=index: self._set_synth(i))
 
-    def set_synth(self, index):
+    def _set_synth(self, index):
         self.last_index = self.current_index
         self.current_index = index
 

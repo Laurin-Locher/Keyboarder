@@ -60,6 +60,8 @@ class App(ctk.CTk, KeyboardVisualizer):
         self.octave = 2
         self.current_parameters = Parameters()
 
+        self.current_bank = 0
+
         # Synth
         self.setup_synth()
 
@@ -125,7 +127,14 @@ class App(ctk.CTk, KeyboardVisualizer):
             self.bind(f'<KeyPress-{(bank + 1) % 10}>', lambda _, i=bank: self.set_current_bank(i))
 
     def set_current_bank(self, index):
-        self.current_bank = index
+        print(index)
+        try:
+            self.current_bank = index
+            self.selector.current_index = index
+            self.selector.update_selector()
+        except IndexError:
+            pass
+
         self.current_parameters = self.all_parameters[index]
         self.update_parameters_gui()
 
