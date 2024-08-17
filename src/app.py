@@ -12,6 +12,11 @@ from panels.keyboard import Keyboard
 from panels.overtone_controls import OvertoneControls
 from panels.asdr_controls import Adsr_controls
 from src.panels.information_panel import InformationPanel
+from src.panels.selector import Selector
+from PIL import Image
+from src.widgets.imagebutton import ImageButton
+from subprocess import call
+
 
 # KEY_BINDING = {
 #     'a': ('B', 0),
@@ -47,6 +52,8 @@ class App(ctk.CTk, KeyboardVisualizer):
 
         super().__init__(fg_color=self.background)
 
+        self.all_parameters = []
+
         # Window config
         self.configure_window()
 
@@ -67,6 +74,9 @@ class App(ctk.CTk, KeyboardVisualizer):
 
         # Midi Input
         MidiInput(self)
+
+        # Update Gui
+        self.selector.update_selector()
 
         # Mainloop
         self.mainloop()
@@ -203,8 +213,65 @@ class App(ctk.CTk, KeyboardVisualizer):
         self.controls_frame = ctk.CTkFrame(self, fg_color=self.background)
         self.controls_frame.grid(row=0, column=0, sticky='nswe', pady=10, padx=10)
 
-        self.keyboard = Keyboard(self, self.synth, self)
-        self.keyboard.grid(row=1, column=0, sticky='nswe', pady=10, padx=10)
+        board_frame = ctk.CTkFrame(self, fg_color=self.background)
+        board_frame.grid(row=1, column=0, sticky='nswe', pady=10, padx=10)
+
+        self.keyboard = Keyboard(board_frame, self.synth, self)
+        self.keyboard.pack(side='left', expand=True, fill='both')
+
+        self.keyboard_controls = ctk.CTkFrame(board_frame, fg_color=self.background)
+        self.keyboard_controls.pack(side='left', fill='both', padx=20)
+
+        self.create_keyboard_controls()
+
+    def create_keyboard_controls(self):
+        octave_controls = self.create_octave_changer()
+        octave_controls.pack(side='left', fill='y', pady=20, padx=10)
+
+        # self.master_volume_slider().pack(side='left', fill='both', pady=50, padx=10)
+
+    def master_volume_slider(self):
+        self.master_volume = ctk.IntVar(value=50)
+        self.master_volume.trace_add('write', self.update_master_volume)
+
+        return Slider(self.keyboard_controls, variable=self.master_volume, from_=0, to=100, has_handle=True, handle_width=50, handle_height=10, fg_color=DARK_COLOR, bg_color=DISABLED_COLOR, handle_color=ACCENT_COLOR, canvas_bg=self.background)
+
+    def update_master_volume(self, *_):
+        call([f"osascript -e 'set volume output volume {self.master_volume.get()}'"], shell=True)
+
+    def create_octave_changer(self):
+        octave_frame = ctk.CTkFrame(self.keyboard_controls, fg_color=self.background)
+        frame = ctk.CTkFrame(octave_frame, fg_color=self.background)
+        self.octave_label = ctk.CTkLabel(frame, text=f'{self.octave}', font=('Arial', 40))
+
+        increase = self.create_image_button(frame, 'increase', lambda _: self.synth.change_octave(1))
+        decrease = self.create_image_button(frame, 'decrease', lambda _: self.synth.change_octave(-1))
+
+        increase.pack(pady=20)
+        self.octave_label.pack()
+        decrease.pack(pady=20)
+
+        self.bind('<KeyPress-Up>', lambda _: self.synth.change_octave(1))
+        self.bind('<KeyPress-Down>', lambda _: self.synth.change_octave(-1))
+
+        frame.pack(expand=True)
+
+        return octave_frame
+
+    @staticmethod
+    def create_image_button(master, folder, command):
+        white_normal = Image.open(f'resource/symbols/{folder}/white/normal.png')
+        white_pressed = Image.open(f'resource/symbols/{folder}/white/pressed.png')
+        black_normal = Image.open(f'resource/symbols/{folder}/black/normal.png')
+        black_pressed = Image.open(f'resource/symbols/{folder}/black/pressed.png')
+        normal = ctk.CTkImage(light_image=black_normal,
+                              dark_image=white_normal
+                              )
+        pressed = ctk.CTkImage(light_image=black_pressed,
+                               dark_image=white_pressed
+                               )
+        increase = ImageButton(master, normal, pressed, command)
+        return increase
 
     def create_control_areas(self):
         self.controls_frame.rowconfigure(0, weight=2, uniform='a')
@@ -215,12 +282,12 @@ class App(ctk.CTk, KeyboardVisualizer):
         self.information_display = InformationPanel(self.controls_frame, self.synth, self.current_parameters,
                                                     self.highlight_color, self.octave, self, background=self.background)
 
-        self.left_controls = ctk.CTkFrame(self.controls_frame, fg_color=self.background)
+        self.selector = Selector(self.controls_frame, self.background, self)
         self.right_controls = ctk.CTkFrame(self.controls_frame, fg_color=self.background)
 
         self.information_display.grid(row=0, column=1, sticky='nswe')
 
-        self.left_controls.grid(row=0, column=0, sticky='nswe', padx=10, rowspan=2)
+        self.selector.grid(row=0, column=0, sticky='nswe', padx=10, rowspan=2)
 
         self.right_controls.grid(row=0, column=2, sticky='nswe', padx=10)
 
@@ -231,12 +298,7 @@ class App(ctk.CTk, KeyboardVisualizer):
         self.adsr_controls = Adsr_controls(self.controls_frame, self.current_parameters, self.background, self)
         self.adsr_controls.grid(row=1, column=1, sticky='nswe', pady=10)
 
-        self.create_left_controls()
         self.create_right_controls()
-
-    def create_left_controls(self):
-        self.left_controls.rowconfigure((0, 1), uniform='a', weight=1)
-        self.left_controls.columnconfigure(0, weight=1, uniform='a')
 
     def create_right_controls(self):
         self.right_controls.rowconfigure(0, weight=1, uniform='a')
@@ -256,6 +318,7 @@ class App(ctk.CTk, KeyboardVisualizer):
         self.adsr_controls.release.set(self.current_parameters.release)
         self.adsr_controls.volume.set(self.current_parameters.volume)
         self.adsr_controls.hold.set(self.current_parameters.hold)
+        self.selector.update_selector()
 
         for index, tone in enumerate(self.overtone_controls.overtones):
             try:
@@ -320,4 +383,4 @@ class App(ctk.CTk, KeyboardVisualizer):
 
     def update_octave(self, octave):
         self.octave = octave
-        self.information_display.octave_label.configure(text=f'octave: {self.octave}')
+        self.octave_label.configure(text=f'{self.octave}')
